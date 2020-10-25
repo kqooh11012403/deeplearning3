@@ -11,7 +11,13 @@ from dezero import Variable
 import dezero.functions as F
 
 x = Variable(np.array([[1,2,3], [4,5,6]]))
-c = Variable(np.array([[10,20,30], [40,50,60]]))
-t = x + c
-y = F.sum(t)
-print(y.data)
+y = F.reshape(x, (6,))
+y.backward(retain_grad=True)
+print(x.grad)
+
+x = Variable(np.random.randn(1,2,3))
+print(x)
+y = x.reshape((2,3))
+print(y)
+y = x.reshape(2,3)
+print(y)

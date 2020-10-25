@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import dezero
 import numpy as np
 import weakref
 import contextlib
@@ -103,6 +104,18 @@ class Variable:
         p = str(self.data).replace('\n', '\n' + ' ' * 9)
         return 'variable(' + p + ')'
 
+    def reshape(self, *shape):
+        if len(shape) == 1 and isinstance(shape[0], (tuple, list)):
+            shape = shape[0]
+        return dezero.functions.reshape(self, shape)
+    
+    def transpose(self):
+        return dezero.funcrions.transpose(self)
+    
+    @property
+    def T(self):
+        return dezero.funcrions.transpose(self)
+    
 class Function:
     def __call__(self, *inputs):
         inputs = [as_variable(x) for x in inputs]
