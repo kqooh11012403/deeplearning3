@@ -92,7 +92,7 @@ class Variable:
                 for y in f.outputs:
                     y().grad = None 
     
-    def cleargrad():
+    def cleargrad(self):
         self.grad = None
         
     @property
