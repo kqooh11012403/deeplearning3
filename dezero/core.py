@@ -6,6 +6,9 @@ import numpy as np
 import weakref
 import contextlib
 
+# =============================================================================
+# Config
+# =============================================================================
 class Config:
     enable_backprop = True
 
@@ -21,6 +24,9 @@ def using_config(name, value):
 def no_grad():
     return using_config('enable_backprop', False)
 
+# =============================================================================
+# Variable / Function
+# =============================================================================
 class Variable:
     __array_priority__ = 200
     
@@ -124,6 +130,20 @@ class Variable:
     def sum(self, axis=None, keepdims=False):
         return dezero.functions.sum(self, axis, keepdims)
     
+class Parameter(Variable):
+    pass
+    
+def as_array(x):
+    if np.isscalar(x):
+        return np.array(x)
+    return x
+
+def as_variable(x):
+    if isinstance(x, Variable):
+        return x
+    return Variable(x)
+
+    
 class Function:
     def __call__(self, *inputs):
         inputs = [as_variable(x) for x in inputs]
@@ -149,6 +169,9 @@ class Function:
     def backward(self, gys):
         raise NotImplementedError()
 
+# =============================================================================
+# 四則演算 / 演算子のオーバーロード
+# =============================================================================
 class Add(Function):
     def forward(self, x0, x1):
         self.x0_shape, self.x1_shape = x0.shape, x1.shape
@@ -241,16 +264,6 @@ class Pow(Function):
 
 def pow(x, c):
     return Pow(c)(x)
-
-def as_array(x):
-    if np.isscalar(x):
-        return np.array(x)
-    return x
-
-def as_variable(x):
-    if isinstance(x, Variable):
-        return x
-    return Variable(x)
 
 def setup_variable():
     Variable.__add__ = add
